@@ -31,7 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
       MaterialPageRoute(builder: (context) => const UserFormScreen()),
     );
 
-    if (result != null && result is Map<String, String>) {
+    if (result != null && result is Map<String, dynamic>) {
       setState(() {
         _registeredUsername = result['username'];
         _registeredPassword = result['password'];
@@ -82,13 +82,20 @@ class _LoginScreenState extends State<LoginScreen> {
               TextFormField(
                 controller: _usernameController,
                 decoration: const InputDecoration(
-                  labelText: 'Usuario',
-                  prefixIcon: Icon(Icons.person),
+                  labelText: 'Correo Electrónico',
+                  prefixIcon: Icon(Icons.email),
                   border: OutlineInputBorder(),
                 ),
+                keyboardType: TextInputType.emailAddress,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Por favor ingrese su usuario';
+                    return 'Por favor ingrese su correo electrónico';
+                  }
+                  // Expresión regular para validar el formato de email
+                  final emailRegex = RegExp(
+                      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+                  if (!emailRegex.hasMatch(value)) {
+                    return 'Por favor ingrese un correo electrónico válido';
                   }
                   return null;
                 },
@@ -105,6 +112,22 @@ class _LoginScreenState extends State<LoginScreen> {
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Por favor ingrese su contraseña';
+                  }
+                  // Validaciones para la contraseña
+                  if (value.length < 8 || value.length > 16) {
+                    return 'La contraseña debe tener entre 8 y 16 caracteres';
+                  }
+                  if (!RegExp(r'[A-Z]').hasMatch(value)) {
+                    return 'Debe contener al menos una mayúscula';
+                  }
+                  if (!RegExp(r'[a-z]').hasMatch(value)) {
+                    return 'Debe contener al menos una minúscula';
+                  }
+                  if (!RegExp(r'[0-9]').hasMatch(value)) {
+                    return 'Debe contener al menos un dígito';
+                  }
+                  if (!RegExp(r'[^a-zA-Z0-9]').hasMatch(value)) {
+                    return 'Debe contener al menos un carácter no alfanumérico';
                   }
                   return null;
                 },

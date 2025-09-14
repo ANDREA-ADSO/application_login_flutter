@@ -3,8 +3,11 @@ import '../../widgets/appbar.dart';
 import '../../widgets/navigation_drawer.dart';
 import '../../widgets/navigation_bottom.dart';
 import '../user/user.dart';
-import '../auth/change_password.dart';
+//import '../auth/change_password';
 import '../auth/login.dart';
+import '../../settings/configuracion.dart';
+
+
 
 class HomeScreen extends StatefulWidget {
   final String username;
