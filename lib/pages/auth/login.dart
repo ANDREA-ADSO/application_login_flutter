@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import '../../widgets/appbar.dart';
 import '../home/home.dart';
 import '../user/form.dart';
+import '../../utils/validation_utils.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({super.key, this.initialEmail, this.initialPassword});
+
+  final String? initialEmail;
+  final String? initialPassword;
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -14,17 +18,17 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  String patternEmail = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$';
-  String patternPassword =
-      r'^(?=.*\d)(?=.*[\u0021-\u002b\u003c-\u0040])(?=.*[A-Z])(?=.*[a-z])\S{8,16}$';
+  String patternEmail = ValidationUtils.emailRegex.pattern;
+  String patternPassword = ValidationUtils.passwordRegex.pattern;
   String? _registeredUsername;
   String? _registeredPassword;
+  bool _obscurePassword = true;
 
   @override
   void initState() {
     super.initState();
-    _usernameController.text = _registeredUsername ?? '';
-    _passwordController.text = _registeredPassword ?? '';
+    _usernameController.text = widget.initialEmail ?? _registeredUsername ?? '';
+    _passwordController.text = widget.initialPassword ?? _registeredPassword ?? '';
   }
 
   void _navigateToRegister() async {
@@ -88,34 +92,28 @@ class _LoginScreenState extends State<LoginScreen> {
                   prefixIcon: Icon(Icons.person),
                   border: OutlineInputBorder(),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor ingrese su usuario';
-                  }
-                  if (!RegExp(patternEmail).hasMatch(value)) {
-                    return 'Ingrese un email válido correo@gmail.com';
-                  }
-                  return null;
-                },
+                validator: ValidationUtils.validateEmail,
               ),
               const SizedBox(height: 20),
               TextFormField(
                 controller: _passwordController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Contraseña',
-                  prefixIcon: Icon(Icons.lock),
-                  border: OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.lock),
+                  border: const OutlineInputBorder(),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                  ),
                 ),
-                obscureText: true,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor ingrese su contraseña';
-                  }
-                  if (!RegExp(patternPassword).hasMatch(value)) {
-                    return 'La contraseña debe tener:\n -Entre 8 y 16 caracteres\n -Al menos un dígito numérico\n -Al menos una minúscula\n -Al menos una mayúscula\n -Al menos un caracter no alfanumérico.';
-                  }
-                  return null;
-                },
+                obscureText: _obscurePassword,
+                validator: ValidationUtils.validatePassword,
               ),
               const SizedBox(height: 30),
               ElevatedButton(

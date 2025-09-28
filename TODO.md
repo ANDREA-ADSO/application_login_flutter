@@ -1,0 +1,4 @@
+- [x] Edit lib/pages/auth/login.dart to add initialEmail and initialPassword constructor parameters and prefill controllers in initState.
+- [x] Edit lib/pages/auth/register.dart to navigate to LoginScreen instead of HomeScreen, passing the email and password.
+- [x] Fix password validation in login.dart to match ValidationUtils for consistency.
+- [x] Add password visibility toggle in login.dart to help user see prefilled password.
